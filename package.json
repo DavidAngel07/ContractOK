@@ -1,0 +1,23 @@
+{
+  "name": "contractok",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DavidAngel07/ContractOK.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DavidAngel07/ContractOK/issues"
+  },
+  "homepage": "https://github.com/DavidAngel07/ContractOK#readme",
+  "description": "",
+  "devDependencies": {
+    "supabase": "^3.0.0"
+  }
+}
