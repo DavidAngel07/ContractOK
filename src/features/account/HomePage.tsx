@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
 import { es } from '../../i18n/es'
+import { one } from '../../lib/utils'
 import { useAuth } from '../auth/AuthProvider'
 
 type RolePermission = { permission_key: string; scope: 'all' | 'assigned' }
@@ -12,11 +13,6 @@ type MembershipRow = {
     | { id: string; name: string; description: string | null; role_permissions: RolePermission[] }
     | { id: string; name: string; description: string | null; role_permissions: RolePermission[] }[]
     | null
-}
-
-// PostgREST puede devolver un objeto o una lista de un elemento según la relación.
-function one<T>(value: T | T[] | null): T | null {
-  return Array.isArray(value) ? (value[0] ?? null) : value
 }
 
 export function HomePage() {

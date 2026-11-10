@@ -1,6 +1,9 @@
-import { Outlet } from 'react-router-dom'
+import { NavLink, Outlet } from 'react-router-dom'
 import { es } from '../i18n/es'
 import { useAuth } from '../features/auth/AuthProvider'
+
+const linkClass = ({ isActive }: { isActive: boolean }) =>
+  `inline-flex min-h-11 items-center border-b-2 px-1 font-bold ${isActive ? 'border-accent' : 'border-transparent text-muted'}`
 
 export function AppLayout() {
   const { session, signOut } = useAuth()
@@ -14,10 +17,16 @@ export function AppLayout() {
         {es.skipToContent}
       </a>
       <header className="border-b border-line bg-surface">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-6 py-4">
-          <p className="text-xl font-extrabold tracking-tight">
-            Contract<span className="text-accent">OK</span>
-          </p>
+        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-6 py-3">
+          <div className="flex flex-wrap items-center gap-6">
+            <p className="text-xl font-extrabold tracking-tight">
+              Contract<span className="text-accent">OK</span>
+            </p>
+            <nav aria-label={es.nav.main} className="flex gap-5">
+              <NavLink to="/" end className={linkClass}>{es.nav.home}</NavLink>
+              <NavLink to="/contractors" className={linkClass}>{es.nav.contractors}</NavLink>
+            </nav>
+          </div>
           <div className="flex items-center gap-4">
             <span className="text-sm text-muted">
               {es.layout.signedInAs} {session?.user.email}

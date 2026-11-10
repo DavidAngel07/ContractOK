@@ -80,7 +80,7 @@ export function LoginPage() {
           <button
             type="submit"
             disabled={submitting || !email || !password}
-            className="min-h-11 rounded-lg bg-accent px-5 font-bold text-accent-ink disabled:opacity-60 hover:bg-gray-100"
+            className="min-h-11 rounded-lg bg-accent px-5 font-bold text-accent-ink disabled:opacity-60"
           >
             {submitting ? es.login.submitting : es.login.submit}
           </button>
