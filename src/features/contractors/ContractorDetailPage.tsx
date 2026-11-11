@@ -115,13 +115,13 @@ export function ContractorDetailPage() {
   })
 
   if (contractor.isLoading) return <p role="status" className="text-muted">{es.loading}</p>
-  if (contractor.error) return <p role="alert" className="rounded-lg bg-danger-bg px-4 py-3 font-bold text-danger">{es.common.loadError}</p>
+  if (contractor.error) return <p role="alert" className="rounded-xl bg-danger-bg px-4 py-3 font-bold text-danger">{es.common.loadError}</p>
   const c = contractor.data
   if (!c) {
     return (
       <div className="flex flex-col gap-3">
         <p>{es.common.notFound}</p>
-        <Link to="/contractors" className="font-bold text-accent underline">{es.common.back}</Link>
+        <Link to="/contractors" className="font-bold text-link underline">{es.common.back}</Link>
       </div>
     )
   }
@@ -136,7 +136,7 @@ export function ContractorDetailPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <Link to="/contractors" className="text-sm font-bold text-accent underline">← {t.title}</Link>
+      <Link to="/contractors" className="text-sm font-bold text-link underline">← {t.title}</Link>
 
       <div className="flex flex-wrap items-center gap-3">
         <h1 className="text-3xl font-extrabold tracking-tight">{c.display_name}</h1>
@@ -146,7 +146,7 @@ export function ContractorDetailPage() {
         <span className="text-muted">{t.kind[c.kind]}</span>
       </div>
 
-      <section className="rounded-2xl border border-line bg-surface p-6" aria-labelledby="data-title">
+      <section className="card p-6" aria-labelledby="data-title">
         <h2 id="data-title" className="text-xl font-bold">{d.data}</h2>
         <dl className="mt-4 grid gap-4 sm:grid-cols-2">
           {dl(d.legalName, c.legal_name)}
@@ -168,23 +168,23 @@ export function ContractorDetailPage() {
         />
       )}
 
-      <section className="rounded-2xl border border-line bg-surface p-6" aria-labelledby="inv-title">
+      <section className="card p-6" aria-labelledby="inv-title">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 id="inv-title" className="text-xl font-bold">{d.invitations}</h2>
           {canManage && (
-            <button type="button" onClick={() => newLink.mutate()} disabled={newLink.isPending} className="min-h-11 rounded-lg bg-accent px-4 font-bold text-accent-ink disabled:opacity-60">
+            <button type="button" onClick={() => newLink.mutate()} disabled={newLink.isPending} className="btn btn-primary btn-sm">
               {newLink.isPending ? d.generating : d.generateLink}
             </button>
           )}
         </div>
         <div aria-live="polite">
-          {actionError && <p role="alert" className="mt-3 rounded-lg bg-danger-bg px-3 py-2 text-sm font-bold text-danger">{actionError}</p>}
+          {actionError && <p role="alert" className="mt-3 rounded-xl bg-danger-bg px-3 py-2 text-sm font-bold text-danger">{actionError}</p>}
         </div>
         {invitations.data && invitations.data.length === 0 && <p className="mt-3 text-muted">{d.noInvitations}</p>}
         {invitations.data && invitations.data.length > 0 && (
           <div className="mt-4 overflow-x-auto">
             <table className="w-full min-w-120 text-left text-sm">
-              <thead className="border-b border-line text-muted">
+              <thead className="border-b border-line bg-gray-soft text-muted">
                 <tr>
                   <th scope="col" className="py-2 pr-4 font-bold">{d.invCreated}</th>
                   <th scope="col" className="py-2 pr-4 font-bold">{d.invExpires}</th>
@@ -202,7 +202,7 @@ export function ContractorDetailPage() {
                       <td className="py-2.5 pr-4"><StatusPill tone={invitationTone[state]}>{t.invitationState[state]}</StatusPill></td>
                       <td className="py-2.5">
                         {canManage && state === 'valid' && (
-                          <button type="button" onClick={() => revoke.mutate(inv.id)} disabled={revoke.isPending} className="min-h-11 rounded-lg border border-line px-3 font-bold">
+                          <button type="button" onClick={() => revoke.mutate(inv.id)} disabled={revoke.isPending} className="btn btn-secondary btn-sm">
                             {d.revoke}
                           </button>
                         )}
@@ -217,13 +217,13 @@ export function ContractorDetailPage() {
       </section>
 
       {c.kind === 'company' && (
-        <section className="rounded-2xl border border-line bg-surface p-6" aria-labelledby="workers-title">
+        <section className="card p-6" aria-labelledby="workers-title">
           <h2 id="workers-title" className="text-xl font-bold">{d.workers}</h2>
           {workers.data && workers.data.length === 0 && <p className="mt-3 text-muted">{d.noWorkers}</p>}
           {workers.data && workers.data.length > 0 && (
             <div className="mt-4 overflow-x-auto">
               <table className="w-full min-w-120 text-left text-sm">
-                <thead className="border-b border-line text-muted">
+                <thead className="border-b border-line bg-gray-soft text-muted">
                   <tr>
                     <th scope="col" className="py-2 pr-4 font-bold">{d.workerName}</th>
                     <th scope="col" className="py-2 pr-4 font-bold">{d.workerId}</th>
@@ -253,7 +253,7 @@ export function ContractorDetailPage() {
             type="button"
             onClick={() => { if (window.confirm(d.archiveConfirm)) archive.mutate() }}
             disabled={archive.isPending}
-            className="min-h-11 rounded-lg border border-line px-4 font-bold text-danger"
+            className="btn btn-danger-outline"
           >
             {d.archive}
           </button>

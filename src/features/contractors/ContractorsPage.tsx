@@ -1,14 +1,11 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
-import { supabase } from '../../lib/supabase'
 import { es } from '../../i18n/es'
 import { formatDate } from '../../lib/utils'
 import { StatusPill } from '../../components/StatusPill'
 import { useAccount } from '../account/useAccount'
 import { contractorStatusTone } from './utils'
-
-type Row = { id: string; kind: 'natural' | 'company'; display_name: string; email: string; status: string; created_at: string }
+import { useContractors } from './useContractors'
 
 export function ContractorsPage() {
   const { can } = useAccount()
@@ -16,18 +13,7 @@ export function ContractorsPage() {
   const [status, setStatus] = useState('')
   const t = es.contractors
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['contractors'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('contractors')
-        .select('id, kind, display_name, email, status, created_at')
-        .is('archived_at', null)
-        .order('created_at', { ascending: false })
-      if (error) throw error
-      return (data ?? []) as Row[]
-    },
-  })
+  const { data, isLoading, error } = useContractors()
 
   const rows = useMemo(() => {
     const q = search.trim().toLowerCase()
@@ -45,7 +31,7 @@ export function ContractorsPage() {
         {can('contractors.manage') && (
           <Link
             to="/contractors/new"
-            className="inline-flex min-h-11 items-center rounded-lg bg-accent px-5 font-bold text-accent-ink"
+            className="btn btn-primary"
           >
             {t.invite}
           </Link>
@@ -62,7 +48,7 @@ export function ContractorsPage() {
             type="search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="min-h-11 w-full rounded-lg border border-line bg-surface px-3"
+            className="field"
           />
         </div>
         <div>
@@ -73,7 +59,7 @@ export function ContractorsPage() {
             id="status"
             value={status}
             onChange={(e) => setStatus(e.target.value)}
-            className="min-h-11 rounded-lg border border-line bg-surface px-3"
+            className="field field-auto"
           >
             <option value="">{t.allStatuses}</option>
             {Object.entries(t.status).map(([key, label]) => (
@@ -91,20 +77,20 @@ export function ContractorsPage() {
         </p>
       )}
       {error && (
-        <p role="alert" className="rounded-lg bg-danger-bg px-4 py-3 font-bold text-danger">
+        <p role="alert" className="rounded-xl bg-danger-bg px-4 py-3 font-bold text-danger">
           {es.common.loadError}
         </p>
       )}
       {!isLoading && !error && rows.length === 0 && (
-        <p className="rounded-xl border border-line bg-surface p-6">
+        <p className="card p-6">
           {(data ?? []).length === 0 ? t.empty : t.emptyFiltered}
         </p>
       )}
 
       {rows.length > 0 && (
-        <div className="overflow-x-auto rounded-2xl border border-line bg-surface">
+        <div className="card overflow-x-auto">
           <table className="w-full min-w-170 text-left text-sm">
-            <thead className="border-b border-line text-muted">
+            <thead className="border-b border-line bg-gray-soft text-muted">
               <tr>
                 <th scope="col" className="px-4 py-3 font-bold">{t.columns.name}</th>
                 <th scope="col" className="px-4 py-3 font-bold">{t.columns.kind}</th>
@@ -117,7 +103,7 @@ export function ContractorsPage() {
               {rows.map((r) => (
                 <tr key={r.id}>
                   <th scope="row" className="px-4 py-3 font-bold">
-                    <Link to={`/contractors/${r.id}`} className="text-accent underline">
+                    <Link to={`/contractors/${r.id}`} className="text-link underline">
                       {r.display_name}
                     </Link>
                   </th>

@@ -41,10 +41,10 @@ export function InviteResult({
   }
 
   const channel =
-    'inline-flex min-h-11 items-center rounded-lg border border-line bg-surface px-4 text-sm font-bold'
+    'btn btn-secondary btn-sm'
 
   return (
-    <section className="rounded-2xl border border-line bg-surface p-6" aria-labelledby="invite-result-title">
+    <section className="card p-6" aria-labelledby="invite-result-title">
       <h2 id="invite-result-title" className="text-xl font-bold">
         {title}
       </h2>
@@ -59,12 +59,12 @@ export function InviteResult({
           readOnly
           value={link}
           onFocus={(e) => e.currentTarget.select()}
-          className="min-h-11 min-w-0 flex-1 rounded-lg border border-line bg-bg px-3 text-sm"
+          className="field min-w-0 flex-1 text-sm"
         />
         <button
           type="button"
           onClick={() => copy(link, 'link')}
-          className="min-h-11 rounded-lg bg-accent px-4 font-bold text-accent-ink"
+          className="btn btn-primary btn-sm"
         >
           {t.copy}
         </button>
@@ -90,11 +90,11 @@ export function InviteResult({
       </div>
       <p className="mt-2 text-sm text-muted">{t.mailHelp}</p>
 
-      <p role="status" className="mt-2 min-h-6 text-sm font-bold text-accent">
+      <p role="status" className="mt-2 min-h-6 text-sm font-bold text-link">
         {copied === 'link' ? t.copied : copied === 'message' ? t.messageCopied : ''}
       </p>
       <p className="text-sm text-muted">{t.expires(expires)}</p>
-      <p className="mt-3 rounded-lg bg-warn-box px-3 py-2 text-sm font-bold">{t.onceWarning}</p>
+      <p className="mt-3 rounded-xl bg-warn-box px-3 py-2 text-sm font-bold">{t.onceWarning}</p>
     </section>
   )
 }

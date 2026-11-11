@@ -25,7 +25,7 @@ export function NewContractorPage() {
 
   if (isLoading) return <p role="status" className="text-muted">{es.loading}</p>
   if (!account || !can('contractors.manage')) {
-    return <p role="alert" className="rounded-lg bg-danger-bg px-4 py-3 font-bold text-danger">{es.common.noPermission}</p>
+    return <p role="alert" className="rounded-xl bg-danger-bg px-4 py-3 font-bold text-danger">{es.common.noPermission}</p>
   }
 
   if (created) {
@@ -42,10 +42,10 @@ export function NewContractorPage() {
           title={es.contractors.result.linkLabel}
         />
         <div className="flex flex-wrap gap-3">
-          <Link to={`/contractors/${created.id}`} className="inline-flex min-h-11 items-center rounded-lg bg-accent px-5 font-bold text-accent-ink">
+          <Link to={`/contractors/${created.id}`} className="btn btn-primary">
             {es.contractors.result.toDetail}
           </Link>
-          <Link to="/contractors" className="inline-flex min-h-11 items-center rounded-lg border border-line px-5 font-bold">
+          <Link to="/contractors" className="btn btn-secondary">
             {es.contractors.result.toList}
           </Link>
         </div>
@@ -92,7 +92,7 @@ export function NewContractorPage() {
     setCreated({ id: row.id, token: inv.token, expiresAt: inv.expires_at, name: name.trim(), email: cleanEmail, phone: phone.trim() || null })
   }
 
-  const field = 'min-h-11 w-full rounded-lg border border-line bg-bg px-3 text-base'
+  const field = 'field'
 
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-6">
@@ -101,11 +101,11 @@ export function NewContractorPage() {
         <p className="mt-1 text-muted">{t.intro}</p>
       </div>
 
-      <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5 rounded-2xl border border-line bg-surface p-6">
+      <form onSubmit={handleSubmit} noValidate className="card flex flex-col gap-5 p-6">
         <fieldset className="flex flex-col gap-3">
           <legend className="mb-2 text-sm font-bold">{t.kindLegend}</legend>
           {(['natural', 'company'] as const).map((k) => (
-            <label key={k} className="flex cursor-pointer items-start gap-3 rounded-xl border border-line p-4 has-checked:border-accent has-checked:bg-bg">
+            <label key={k} className="flex cursor-pointer items-start gap-3 rounded-xl border border-line p-4 has-checked:border-accent has-checked:bg-accent-wash">
               <input type="radio" name="kind" value={k} checked={kind === k} onChange={() => setKind(k)} className="mt-1" />
               <span>
                 <span className="block font-bold">{es.contractors.kind[k]}</span>
@@ -132,7 +132,7 @@ export function NewContractorPage() {
 
         <div aria-live="polite">
           {errors.form && (
-            <p role="alert" className="rounded-lg bg-danger-bg px-3 py-2 text-sm font-bold text-danger">
+            <p role="alert" className="rounded-xl bg-danger-bg px-3 py-2 text-sm font-bold text-danger">
               {errors.form}{' '}
               {partialId && (
                 <Link to={`/contractors/${partialId}`} className="underline">{es.contractors.result.toDetail}</Link>
@@ -142,8 +142,8 @@ export function NewContractorPage() {
         </div>
 
         <div className="flex flex-wrap justify-end gap-3">
-          <Link to="/contractors" className="inline-flex min-h-11 items-center rounded-lg border border-line px-5 font-bold">{es.common.cancel}</Link>
-          <button type="submit" disabled={submitting} className="min-h-11 rounded-lg bg-accent px-5 font-bold text-accent-ink disabled:opacity-60">
+          <Link to="/contractors" className="btn btn-secondary">{es.common.cancel}</Link>
+          <button type="submit" disabled={submitting} className="btn btn-primary">
             {submitting ? t.submitting : t.submit}
           </button>
         </div>
