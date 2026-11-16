@@ -1,9 +1,10 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
 import { es } from '../../i18n/es'
 import { useAccount } from '../account/useAccount'
+import { useProfiles } from '../settings/hooks'
 import { InviteResult } from './InviteResult'
 import { isValidEmail } from './utils'
 
@@ -21,6 +22,16 @@ export function NewContractorPage() {
   const [submitting, setSubmitting] = useState(false)
   const [created, setCreated] = useState<Created | null>(null)
   const [partialId, setPartialId] = useState<string | null>(null)
+  const [profileId, setProfileId] = useState('')
+  const profiles = useProfiles()
+  const available = useMemo(
+    () => (profiles.data ?? []).filter((p) => p.is_active && (p.contractor_kind === 'both' || p.contractor_kind === kind)),
+    [profiles.data, kind],
+  )
+  // Al cambiar el tipo de contratista se propone el primer perfil que le aplica.
+  useEffect(() => {
+    setProfileId((prev) => (available.some((p) => p.id === prev) ? prev : (available[0]?.id ?? '')))
+  }, [available])
   const t = es.contractors.form
 
   if (isLoading) return <p role="status" className="text-muted">{es.loading}</p>
@@ -71,13 +82,14 @@ export function NewContractorPage() {
         display_name: name.trim(),
         email: cleanEmail,
         phone: phone.trim() || null,
+        requirement_profile_id: profileId || null,
       })
       .select('id')
       .single()
 
     if (error || !row) {
       setSubmitting(false)
-      setErrors({ form: error?.code === '23505' ? t.duplicate : t.generic })
+      setErrors({ form: error?.code === '23505' ? t.duplicate : error?.code === '23514' ? t.profileMismatch : t.generic })
       return
     }
     await queryClient.invalidateQueries({ queryKey: ['contractors'] })
@@ -128,6 +140,15 @@ export function NewContractorPage() {
         <div>
           <label htmlFor="phone" className="mb-1.5 block text-sm font-bold">{t.phone}</label>
           <input id="phone" type="tel" autoComplete="off" value={phone} onChange={(e) => setPhone(e.target.value)} className={field} />
+        </div>
+
+        <div>
+          <label htmlFor="profile" className="mb-1.5 block text-sm font-bold">{t.profile}</label>
+          <select id="profile" value={profileId} onChange={(e) => setProfileId(e.target.value)} className="field" aria-describedby="profile-help">
+            <option value="">{t.profileNone}</option>
+            {available.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+          </select>
+          <p id="profile-help" className="mt-1 text-sm text-muted">{t.profileHelp}</p>
         </div>
 
         <div aria-live="polite">

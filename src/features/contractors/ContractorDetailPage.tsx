@@ -7,6 +7,7 @@ import { formatDate, formatDateTime } from '../../lib/utils'
 import { StatusPill } from '../../components/StatusPill'
 import { useAccount } from '../account/useAccount'
 import { InviteResult } from './InviteResult'
+import { useProfiles } from '../settings/hooks'
 import { contractorStatusTone, invitationState, invitationTone, type InvitationRow } from './utils'
 
 type Contractor = {
@@ -19,6 +20,7 @@ type Contractor = {
   phone: string | null
   status: string
   created_at: string
+  requirement_profile_id: string | null
 }
 type Worker = { id: string; full_name: string; id_number: string; job_title: string | null; status: string }
 type Fresh = { token: string; expiresAt: string }
@@ -38,7 +40,7 @@ export function ContractorDetailPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('contractors')
-        .select('id, kind, display_name, legal_name, tax_id, email, phone, status, created_at')
+        .select('id, kind, display_name, legal_name, tax_id, email, phone, status, created_at, requirement_profile_id')
         .eq('id', id)
         .is('archived_at', null)
         .maybeSingle()
@@ -114,6 +116,19 @@ export function ContractorDetailPage() {
     onError: () => setActionError(d.archiveError),
   })
 
+  const profiles = useProfiles()
+  const setProfile = useMutation({
+    mutationFn: async (profileId: string) => {
+      const { error } = await supabase.from('contractors').update({ requirement_profile_id: profileId || null }).eq('id', id)
+      if (error) throw error
+    },
+    onSuccess: async () => {
+      setActionError(null)
+      await queryClient.invalidateQueries({ queryKey: ['contractor', id] })
+    },
+    onError: () => setActionError(d.profileError),
+  })
+
   if (contractor.isLoading) return <p role="status" className="text-muted">{es.loading}</p>
   if (contractor.error) return <p role="alert" className="rounded-xl bg-danger-bg px-4 py-3 font-bold text-danger">{es.common.loadError}</p>
   const c = contractor.data
@@ -154,6 +169,21 @@ export function ContractorDetailPage() {
           {dl(d.email, c.email)}
           {dl(d.phone, c.phone)}
         </dl>
+        <div className="mt-5">
+          <label htmlFor="c-profile" className="mb-1.5 block text-sm font-bold">{d.profile}</label>
+          <select
+            id="c-profile"
+            value={c.requirement_profile_id ?? ''}
+            disabled={!canManage || setProfile.isPending}
+            onChange={(e) => setProfile.mutate(e.target.value)}
+            className="field field-auto min-w-64"
+          >
+            <option value="">{d.profileNone}</option>
+            {(profiles.data ?? [])
+              .filter((p) => p.id === c.requirement_profile_id || (p.is_active && (p.contractor_kind === 'both' || p.contractor_kind === c.kind)))
+              .map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+          </select>
+        </div>
       </section>
 
       {fresh && account && (

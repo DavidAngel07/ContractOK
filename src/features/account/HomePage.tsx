@@ -6,6 +6,7 @@ import { es } from '../../i18n/es'
 import { one } from '../../lib/utils'
 import { AlertIcon, CheckCircleIcon, ClockIcon, UsersIcon } from '../../components/icons'
 import { useContractors } from '../contractors/useContractors'
+import { SetupBanner } from '../setup/SetupBanner'
 import { useAuth } from '../auth/AuthProvider'
 import { useAccount } from './useAccount'
 
@@ -96,6 +97,8 @@ export function HomePage() {
       </div>
 
       {!hasCompany && <p className="card p-6">{es.home.noCompany}</p>}
+
+      <SetupBanner />
 
       {hasCompany && (
         <section aria-label={es.nav.contractors} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

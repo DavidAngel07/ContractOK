@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { es } from '../i18n/es'
 import { useAuth } from '../features/auth/AuthProvider'
-import { HomeIcon, MenuIcon, UsersIcon } from './icons'
+import { useAccount } from '../features/account/useAccount'
+import { HomeIcon, MenuIcon, SettingsIcon, UsersIcon } from './icons'
 import { Logo } from './Logo'
 
 const navClass = ({ isActive }: { isActive: boolean }) =>
@@ -19,6 +20,7 @@ function initials(email: string | undefined) {
 
 export function AppLayout() {
   const { session, signOut } = useAuth()
+  const { can } = useAccount()
   const [open, setOpen] = useState(false)
   const email = session?.user.email
 
@@ -60,6 +62,14 @@ export function AppLayout() {
                 {es.nav.contractors}
               </NavLink>
             </li>
+            {(can('company.configure') || can('users.manage')) && (
+              <li>
+                <NavLink to="/settings" className={navClass} onClick={() => setOpen(false)}>
+                  <SettingsIcon />
+                  {es.nav.settings}
+                </NavLink>
+              </li>
+            )}
           </ul>
         </nav>
 

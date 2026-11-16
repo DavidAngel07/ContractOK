@@ -18,7 +18,7 @@ export function ContractorLoginPage() {
         <div className="card p-8">
           <h1 className="text-3xl font-extrabold tracking-tight">{es.contractorLogin.title}</h1>
           <p className="mt-1 mb-6 text-muted">{es.contractorLogin.subtitle}</p>
-          <OtpForm shouldCreateUser={false} onVerified={() => navigate('/', { replace: true })} />
+          <OtpForm shouldCreateUser onVerified={() => navigate('/', { replace: true })} />
         </div>
         <p className="mt-6 text-center text-sm">
           <Link to="/login" className="font-bold text-link underline">

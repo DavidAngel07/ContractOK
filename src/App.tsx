@@ -11,6 +11,16 @@ import { NewContractorPage } from './features/contractors/NewContractorPage'
 import { InvitePage } from './features/invite/InvitePage'
 import { PortalLayout } from './features/portal/PortalLayout'
 import { PortalPage } from './features/portal/PortalPage'
+import { CompanyPage } from './features/settings/CompanyPage'
+import { DocumentFormPage } from './features/settings/DocumentFormPage'
+import { DocumentsPage } from './features/settings/DocumentsPage'
+import { Gate } from './features/settings/Gate'
+import { ProfileEditorPage } from './features/settings/ProfileEditorPage'
+import { ProfilesPage } from './features/settings/ProfilesPage'
+import { RolesPage } from './features/settings/RolesPage'
+import { SettingsIndex, SettingsLayout } from './features/settings/SettingsLayout'
+import { UsersPage } from './features/settings/UsersPage'
+import { SetupPage } from './features/setup/SetupPage'
 
 export default function App() {
   return (
@@ -26,11 +36,30 @@ export default function App() {
           </Route>
         </Route>
         <Route element={<RequireStaff />}>
+          <Route element={<Gate permission="company.configure" />}>
+            <Route path="/setup" element={<SetupPage />} />
+          </Route>
           <Route element={<AppLayout />}>
             <Route path="/dashboard" element={<HomePage />} />
             <Route path="/contractors" element={<ContractorsPage />} />
             <Route path="/contractors/new" element={<NewContractorPage />} />
             <Route path="/contractors/:id" element={<ContractorDetailPage />} />
+            <Route path="/settings" element={<SettingsLayout />}>
+              <Route index element={<SettingsIndex />} />
+              <Route element={<Gate permission="company.configure" />}>
+                <Route path="company" element={<CompanyPage />} />
+                <Route path="documents" element={<DocumentsPage />} />
+                <Route path="documents/new" element={<DocumentFormPage />} />
+                <Route path="documents/:id" element={<DocumentFormPage />} />
+                <Route path="profiles" element={<ProfilesPage />} />
+                <Route path="profiles/new" element={<ProfileEditorPage />} />
+                <Route path="profiles/:id" element={<ProfileEditorPage />} />
+              </Route>
+              <Route element={<Gate permission="users.manage" />}>
+                <Route path="roles" element={<RolesPage />} />
+                <Route path="users" element={<UsersPage />} />
+              </Route>
+            </Route>
           </Route>
         </Route>
       </Route>

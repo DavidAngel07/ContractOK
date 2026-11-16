@@ -1,9 +1,16 @@
 import { Navigate, Outlet } from 'react-router-dom'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { supabase } from '../../lib/supabase'
 import { es } from '../../i18n/es'
 import { Logo } from '../../components/Logo'
-import { useAccount } from '../account/useAccount'
+import { useAccount, type Account } from '../account/useAccount'
 import { useMyPortal } from '../portal/useMyPortal'
 import { useAuth } from './AuthProvider'
+
+// El administrador de una empresa nueva empieza por el asistente de configuración; el resto, por el dashboard.
+export function staffDestination(account: Pick<Account, 'setupStatus' | 'permissions'>) {
+  return account.setupStatus === 'not_started' && account.permissions.has('company.configure') ? '/setup' : '/dashboard'
+}
 
 function Loading() {
   return (
@@ -15,12 +22,30 @@ function Loading() {
 
 // Decide a dónde va cada persona al entrar: personal de la empresa o contratista.
 export function EntryRedirect() {
-  const { account, isLoading } = useAccount()
+  const { account, isLoading, isFetching } = useAccount()
   const portal = useMyPortal()
-  const { signOut } = useAuth()
+  const { session, signOut } = useAuth()
+  const queryClient = useQueryClient()
 
-  if (isLoading || portal.isLoading) return <Loading />
-  if (account) return <Navigate to="/dashboard" replace />
+  // Si no es personal ni contratista, puede tener una invitación de personal pendiente: se activa al ingresar.
+  const noRoles = !isLoading && !portal.isLoading && !account && (portal.data ?? []).length === 0
+  const claim = useQuery({
+    queryKey: ['claim-staff', session?.user.id],
+    enabled: noRoles,
+    staleTime: Infinity,
+    retry: false,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('claim_staff_invitation')
+      if (error) throw error
+      const n = Number(data ?? 0)
+      if (n > 0) await queryClient.invalidateQueries({ queryKey: ['account-context'] })
+      return n
+    },
+  })
+
+  if (isLoading || portal.isLoading || (noRoles && claim.isLoading)) return <Loading />
+  if ((claim.data ?? 0) > 0 && !account && isFetching) return <Loading />
+  if (account) return <Navigate to={staffDestination(account)} replace />
   if ((portal.data ?? []).length > 0) return <Navigate to="/portal" replace />
 
   return (
